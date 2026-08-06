@@ -42,12 +42,38 @@ When a routed tool runs:
 
 ## Install
 
-See [the repository README](../README.md) for the shared install steps: copy this
-folder plus `index.ts` into your opencode `plugins/` directory, and make sure
-`@opencode-ai/plugin` is in your config directory's `package.json`.
+opencode auto-loads local plugins from `plugins/*.{ts,js}` — top level only, no
+subdirectories — and instantiates every exported function of those files as a
+plugin. A plugin living in its own folder therefore needs one line in a barrel
+file.
 
-Then add routing metadata to a skill and restart opencode. The toast on first use
-tells you which model actually ran.
+1. Clone this repository into your opencode plugins directory (global
+   `~/.config/opencode/plugins/` or per-project `.opencode/plugins/`):
+
+   ```sh
+   cd ~/.config/opencode/plugins
+   git clone https://github.com/jmrona/skill-model-router.git
+   ```
+
+2. Export it from `plugins/index.ts`, creating that file if you do not have one.
+   Export **only** plugin functions — any other export breaks loading with
+   `Plugin export is not a function`:
+
+   ```ts
+   export { SkillModelRouter } from "./skill-model-router"
+   ```
+
+3. Ensure `@opencode-ai/plugin` is a dependency in your config directory's
+   `package.json` (opencode runs `bun install` at startup):
+
+   ```json
+   { "dependencies": { "@opencode-ai/plugin": "^1.4.6" } }
+   ```
+
+4. Restart opencode.
+
+Then add routing metadata to a skill. The toast on first use tells you which
+model actually ran.
 
 ## Skill frontmatter
 
@@ -162,6 +188,4 @@ started from it.
 
 ## Licence
 
-[MIT](./LICENSE), copyright Jose Romero and Future Publishing Limited. This
-plugin carries its own licence file; the one at the root of the repository covers
-the others.
+[MIT](./LICENSE), copyright Jose Romero and Future Publishing Limited.
